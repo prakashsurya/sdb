@@ -54,9 +54,11 @@ class Command:
                 self.call).return_annotation == Iterable[drgn.Object]:
             self.ispipeable = True
 
-        parser = argparse.ArgumentParser(prog=name)
-        self._init_argparse(parser)
-        self.args = parser.parse_args(args.split())
+        self.parser = argparse.ArgumentParser(prog=name)
+        docstr = inspect.getdoc(type(self))
+        self.parser.description = docstr.splitlines()[0].strip()
+        self._init_argparse(self.parser)
+        self.args = self.parser.parse_args(args.split())
 
     def __init_subclass__(cls, **kwargs):
         """
@@ -77,7 +79,7 @@ class Command:
         raise NotImplementedError
 
     @classmethod
-    def help(cls, name: str, verbose: bool = False):
+    def help(cls, name: str, verbose: bool = False, obj = None):
         """
         Print a help message for the command based on the documentation
         string for the class. This assumes the documentation uses the form:
@@ -86,28 +88,27 @@ class Command:
         :type name: bool
         """
         docstr = inspect.getdoc(cls)
-        summary = docstr.splitlines()[0].strip()
-        description = list(map(lambda x: x.strip(), docstr.splitlines()[1:]))
+        summary = docstr.splitlines()[0]
+        description = docstr.splitlines()[1:]
 
         if not verbose:
             print("{} - {}".format(name, summary))
         else:
             print("SUMMARY")
-            print("\t{} - {}".format(name, summary))
+            for line in obj.parser.format_help().split('\n')[:-1]:
+                print("    {}".format(line.replace('usage: ', '')))
 
             if len(cls.names) > 1:
                 print("\nALIASES")
-                print("\t{}".format(", ".join(cls.names)))
+                print("    {}".format(", ".join(cls.names)))
 
             if description:
-                print("\nDESCRIPTION")
-
                 #
                 # The first line of the description should be a blank line,
                 # so we skip it, unless it's (unconventionally) not blank.
                 #
                 if not description[0]:
-                    print("\t{}".format(description[0]))
+                    print("{}".format(description[0]))
 
                 for line in description[1:]:
-                    print("\t{}".format(line))
+                    print("{}".format(line))

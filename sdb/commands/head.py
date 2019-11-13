@@ -25,10 +25,16 @@ import sdb
 
 class Head(sdb.Command):
     # pylint: disable=too-few-public-methods
-    """
-    Return the first N objects passed in the pipeline
+    """Return the first N objects passed in the pipeline
 
-    Command takes a 'count' parameter which defaults to 10
+    DESCRIPTION
+
+        Command takes a 'count' parameter which defaults to 10
+
+    EXAMPLES
+
+        > spa | head 1 | member spa_name
+        (char [256])"domain0"
     """
 
     names = ["head"]
