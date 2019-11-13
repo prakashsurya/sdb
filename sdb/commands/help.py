@@ -34,7 +34,7 @@ class Help(sdb.Command):
         parser.add_argument('-v', '--verbose', action='store_true')
         parser.add_argument('cmd', nargs='?')
 
-    def call(self, objs: Iterable[drgn.Object]):
+    def call(self, objs: Iterable[drgn.Object]) -> None:
         if self.args.cmd:
             if self.args.cmd in sdb.all_commands:
                 cmd_list = [self.args.cmd]

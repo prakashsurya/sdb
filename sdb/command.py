@@ -41,15 +41,6 @@ class Command:
     #
     names: List[str] = []
 
-    #
-    # name:
-    #    The name used when the command was invoked. This
-    #    is generally used as a parameter passed to
-    #    exceptions raised by SDB to make error messages
-    #    more precise.
-    #
-    name: str = ""
-
     input_type: Optional[str] = None
 
     def __init__(self, prog: drgn.Program, args: str = "",
@@ -94,15 +85,29 @@ class Command:
         <optional, and possibly multi-line description of command>
         :type name: bool
         """
-        cmd_name = '{0}: '.format(name)
         docstr = inspect.getdoc(cls)
-        summary = docstr.splitlines()[0]
+        summary = docstr.splitlines()[0].strip()
+        description = list(map(lambda x: x.strip(), docstr.splitlines()[1:]))
 
-        print(cmd_name + summary)
-        if verbose:
-            # Print additional names (a.k.a. aliases) for the command
+        if not verbose:
+            print("{} - {}".format(name, summary))
+        else:
+            print("SUMMARY")
+            print("\t{} - {}".format(name, summary))
+
             if len(cls.names) > 1:
-                print('aliases: {0}'.format(cls.names[1:]))
-            # Print out remaining doc string
-            if len(docstr) > len(summary):
-                print(docstr[len(summary) + 1:])
+                print("\nALIASES")
+                print("\t{}".format(", ".join(cls.names)))
+
+            if description:
+                print("\nDESCRIPTION")
+
+                #
+                # The first line of the description should be a blank line,
+                # so we skip it, unless it's (unconventionally) not blank.
+                #
+                if not description[0]:
+                    print("\t{}".format(description[0]))
+
+                for line in description[1:]:
+                    print("\t{}".format(line))
