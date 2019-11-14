@@ -30,9 +30,11 @@ class Help(sdb.Command):
 
     names = ["help"]
 
-    def _init_argparse(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument('-v', '--verbose', action='store_true')
+    @classmethod
+    def _init_parser(cls, name: str) -> argparse.ArgumentParser:
+        parser = super(Help, cls)._init_parser(name)
         parser.add_argument('cmd', nargs='?')
+        return parser
 
     def call(self, objs: Iterable[drgn.Object]) -> None:
         if self.args.cmd:

@@ -43,6 +43,11 @@ class Command:
 
     input_type: Optional[str] = None
 
+    @classmethod
+    def _init_parser(cls, name: str) -> argparse.ArgumentParser:
+        summary = inspect.getdoc(cls).splitlines()[0].strip()
+        return argparse.ArgumentParser(prog=name, description=summary)
+
     def __init__(self, prog: drgn.Program, args: str = "",
                  name: str = "_") -> None:
         self.prog = prog
@@ -54,10 +59,7 @@ class Command:
                 self.call).return_annotation == Iterable[drgn.Object]:
             self.ispipeable = True
 
-        self.parser = argparse.ArgumentParser(prog=name)
-        docstr = inspect.getdoc(type(self))
-        self.parser.description = docstr.splitlines()[0].strip()
-        self._init_argparse(self.parser)
+        self.parser = type(self)._init_parser(name)
         self.args = self.parser.parse_args(args.split())
 
     def __init_subclass__(cls, **kwargs):
@@ -69,9 +71,6 @@ class Command:
         super().__init_subclass__(**kwargs)
         for name in cls.names:
             sdb.register_command(name, cls)
-
-    def _init_argparse(self, parser: argparse.ArgumentParser) -> None:
-        pass
 
     def call(self,
              objs: Iterable[drgn.Object]) -> Optional[Iterable[drgn.Object]]:
