@@ -25,7 +25,8 @@ import sdb
 
 class Head(sdb.Command):
     # pylint: disable=too-few-public-methods
-    """Return the first N objects passed in the pipeline
+    """
+    Return the first N objects passed in the pipeline
 
     DESCRIPTION
 

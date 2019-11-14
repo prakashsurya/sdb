@@ -59,5 +59,4 @@ class Help(sdb.Command):
                     aliases.remove(cmd)
 
         for cmd in cmd_list:
-            obj = sdb.all_commands[cmd](self.prog, '', cmd)
-            sdb.all_commands[cmd].help(cmd, self.args.verbose, obj)
+            sdb.all_commands[cmd].help(cmd)

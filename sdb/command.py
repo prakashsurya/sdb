@@ -45,7 +45,16 @@ class Command:
 
     @classmethod
     def _init_parser(cls, name: str) -> argparse.ArgumentParser:
-        summary = inspect.getdoc(cls).splitlines()[0].strip()
+        #
+        # If the class doesn't have a docstring, "inspect.getdoc" will
+        # pull from the parent class's docstring, if the parent class
+        # does have a docstring. This is not the behavior we want, so we
+        # first check "cls.__doc__" before using "inspect.getdoc".
+        #
+        if cls.__doc__:
+            summary = inspect.getdoc(cls).splitlines()[0].strip()
+        else:
+            summary = None
         return argparse.ArgumentParser(prog=name, description=summary)
 
     def __init__(self, prog: drgn.Program, args: str = "",
@@ -78,7 +87,7 @@ class Command:
         raise NotImplementedError
 
     @classmethod
-    def help(cls, name: str, verbose: bool = False, obj = None):
+    def help(cls, name: str):
         """
         Print a help message for the command based on the documentation
         string for the class. This assumes the documentation uses the form:
@@ -86,28 +95,36 @@ class Command:
         <optional, and possibly multi-line description of command>
         :type name: bool
         """
-        docstr = inspect.getdoc(cls)
-        summary = docstr.splitlines()[0]
-        description = docstr.splitlines()[1:]
+        parser = cls._init_parser(name)
 
-        if not verbose:
-            print("{} - {}".format(name, summary))
-        else:
-            print("SUMMARY")
-            for line in obj.parser.format_help().split('\n')[:-1]:
-                print("    {}".format(line.replace('usage: ', '')))
+        print("SUMMARY")
+        for i, line in enumerate(parser.format_help().split('\n')):
+            #
+            # When printing the help message, the first line will have a
+            # "usage: " prefix string which looks awkward, so we strip
+            # that prefix prior to printing the first line.
+            #
+            if i == 0:
+                line = line.replace('usage: ', '')
+            print("    {}".format(line.replace('usage: ', '')))
 
-            if len(cls.names) > 1:
-                print("\nALIASES")
-                print("    {}".format(", ".join(cls.names)))
+        if len(cls.names) > 1:
+            print("ALIASES")
+            print("    {}".format(", ".join(cls.names)))
+            print()
 
-            if description:
-                #
-                # The first line of the description should be a blank line,
-                # so we skip it, unless it's (unconventionally) not blank.
-                #
-                if not description[0]:
-                    print("{}".format(description[0]))
-
-                for line in description[1:]:
-                    print("{}".format(line))
+        #
+        # If the class doesn't have a docstring, "inspect.getdoc" will
+        # pull from the parent class's docstring, if the parent class
+        # does have a docstring. This is not the behavior we want, so we
+        # first check "cls.__doc__" before using "inspect.getdoc".
+        #
+        if cls.__doc__:
+            #
+            # The first line of the docstring is the summary, whichis
+            # already be included in the parser description. The second
+            # line should be empty. Thus, we skip these two lines.
+            #
+            for line in inspect.getdoc(cls).splitlines()[2:]:
+                print("{}".format(line))
+            print()
