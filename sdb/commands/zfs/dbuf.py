@@ -102,22 +102,24 @@ class Dbuf(sdb.Locator, sdb.PrettyPrinter):
 
     def filter(self, db):
         if self.args.object and db.db.db_object != self.args.object:
-            return False
+            return None
         if self.args.level and db.db_level != self.args.level:
-            return False
+            return None
         if self.args.blkid and db.db_blkid != self.args.blkid:
-            return False
+            return None
         if self.args.has_holds and db.db_holds.rc_count == 0:
-            return False
+            return None
         if self.args.dataset and Objset.name(db.db_objset) != self.args.dataset:
-            return False
-        return True
+            return None
+        return db
+
+    @staticmethod
+    def yield_dbufs(dbuf) -> Iterable[drgn.Object]:
+        while dbuf:
+            yield dbuf
+            dbuf = dbuf.db_hash_next
 
     def no_input(self) -> Iterable[drgn.Object]:
         hash_map = self.prog["dbuf_hash_table"].address_of_()
         for i in range(hash_map.hash_table_mask):
-            dbuf = hash_map.hash_table[i]
-            while dbuf:
-                if self.filter(dbuf):
-                    yield dbuf
-                dbuf = dbuf.db_hash_next
+            yield from map(self.filter, Dbuf.yield_dbufs(hash_map.hash_table[i]))
