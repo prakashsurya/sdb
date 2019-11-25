@@ -103,12 +103,6 @@ class Command:
         self.prog = prog
         self.name = name
         self.islast = False
-        self.ispipeable = False
-
-        if inspect.signature(
-                self.call).return_annotation == Iterable[drgn.Object]:
-            self.ispipeable = True
-
         self.parser = type(self)._init_parser(name)
         self.args = self.parser.parse_args(args.split())
 

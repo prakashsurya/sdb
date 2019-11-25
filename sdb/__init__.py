@@ -74,33 +74,9 @@ def execute_pipeline(prog: drgn.Program, first_input: Iterable[drgn.Object],
     else:
         this_input = execute_pipeline(prog, first_input, pipeline[:-1])
 
-    yield from pipeline[-1].call(this_input)
-
-
-def execute_pipeline_term(prog: drgn.Program,
-                          first_input: Iterable[drgn.Object],
-                          pipeline: List["sdb.Command"]) -> None:
-    """
-    This function is very similar to execute_pipeline, with the
-    exception that it doesn't yield any results. This function should be
-    used (rather than execute_pipeline) when the last sdb.Command in the
-    pipeline doesn't yield any results.
-    """
-
-    #
-    # If the last stage wants its input to be of a certain type, we
-    # automatically insert a "coerce" stage before it, so that the input
-    # can be safely coerced into the type that it wants.
-    #
-    if pipeline[-1].input_type is not None:
-        pipeline.insert(-1, sdb.Coerce(prog, pipeline[-1].input_type))
-
-    if len(pipeline) == 1:
-        this_input = first_input
-    else:
-        this_input = execute_pipeline(prog, first_input, pipeline[:-1])
-
-    pipeline[-1].call(this_input)
+    result = pipeline[-1].call(this_input)
+    if result is not None:
+        yield from result
 
 
 def invoke(prog: drgn.Program, first_input: Iterable[drgn.Object],
@@ -176,10 +152,9 @@ def invoke(prog: drgn.Program, first_input: Iterable[drgn.Object],
         sys.stdout = shell_proc.stdin  # type: ignore
 
     try:
-        if pipeline[-1].ispipeable:
-            yield from execute_pipeline(prog, first_input, pipeline)
-        else:
-            execute_pipeline_term(prog, first_input, pipeline)
+        result = execute_pipeline(prog, first_input, pipeline)
+        if result is not None:
+            yield from result
 
         if shell_cmd is not None:
             shell_proc.stdin.flush()
