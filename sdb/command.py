@@ -17,6 +17,7 @@
 
 import argparse
 import inspect
+import textwrap
 from typing import Iterable, List, Optional
 
 import drgn
@@ -82,14 +83,15 @@ class Command:
 
         if issubclass(cls, sdb.PrettyPrinter):
             print("PRETTY PRINTER")
-            print(f"    This is a PrettyPrinter for {cls.input_type}.")
-            print(f"    If prints a human-readable decoding of the object.")
-            print(f"    For the raw object contents, pipe the "
-                  f"output to 'echo'.")
+            print(textwrap.fill(
+                f"This is a PrettyPrinter for {cls.input_type}."
+                f"It prints a human-readable decoding of the object."
+                f"For the raw object contents, pipe the output to 'echo'.",
+                initial_indent="    ", subsequent_indent="    "))
             print()
 
         if issubclass(cls, sdb.Walker):
-            print("PRETTY PRINTER")
+            print("WALKER")
             print(f"    This is a Walker for {cls.input_type}.  "
                   "See 'help walk'.")
             print()
@@ -97,26 +99,27 @@ class Command:
         if issubclass(cls, sdb.Locator):
             # pylint: disable=no-member
             print("LOCATOR")
-            print(f"    This is a Locator for {cls.output_type}.")
-            print(f"    It finds objects of this type and "
-                  f"outputs or pretty-prints them.")
-            print(f"    It accepts any Walkable type (run 'walk' for a list).")
+            loc_text = (
+                f"This is a Locator for {cls.output_type}.  It finds objects "
+                f"of this type and outputs or pretty-prints them.  It accepts "
+                f"any Walkable type (run 'walk' for a list).")
             if cls.no_input != sdb.Locator.no_input:
-                print(f"    All objects of type {cls.output_type} "
-                      f"can be found by ")
-                print(f"    running '{name}' as the first "
-                      f"command in the pipeline.")
+                loc_text += (
+                    f"All objects of type {cls.output_type} can be found by "
+                    f"running '{name}' as the first command in the pipeline.")
             types = list()
             for (_, method) in inspect.getmembers(cls, inspect.isroutine):
                 if hasattr(method, "input_typename_handled"):
                     types.append(method.input_typename_handled)
             if len(types) != 0:
-                print("    The following types are also accepted:")
-                for type_name in types:
-                    print(f"        {type_name}")
-                print(f"    Objects of type {cls.output_type} "
-                      f"which are associated with the ")
-                print(f"    input object will be located.")
+                loc_text += (
+                    f"Objects of type {cls.output_type} which are associated "
+                    f"with the following types of input objects can also "
+                    f"be located:")
+            print(textwrap.fill(loc_text,
+                initial_indent="    ", subsequent_indent="    "))
+            for type_name in types:
+                print(f"        {type_name}")
 
         #
         # If the class doesn't have a docstring, "inspect.getdoc" will
