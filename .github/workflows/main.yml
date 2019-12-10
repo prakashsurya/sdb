@@ -51,26 +51,7 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: '3.6'
-      #
-      # We use pip to install:
-      # - `aws` so we can download our reference crash dump from S3
-      #   with `download-dump-from-s3.sh`.
-      # - `python-config` because it is needed for libkdumpfile.
-      # - `pytest` and `pytest-cov` for obvious reasons.
-      #
-      # Note that we are creating the `python-config` symlink below
-      # ourselves. This is very hacky but seems necessary since I
-      # (Serapheim) wasn't able to find a way to correctly produce
-      # it given the current infrastructure (apt and pip/pip3) as
-      # this seems to be an issue with how Github/Azure is laying
-      # out the Python build for us. Fortunately, we should be able
-      # to properly fix everything by using virtual environments
-      # (see issue #115).
-      #
       - run: python3 -m pip install aws python-config pytest pytest-cov
-      - run: ls /opt/hostedtoolcache/Python/3.6.9/x64/bin/
-      - run: ln -s /opt/hostedtoolcache/Python/3.6.9/x64/bin/python3-config /opt/hostedtoolcache/Python/3.6.9/x64/bin/python-config
-      - run: ls /opt/hostedtoolcache/Python/3.6.9/x64/bin/
       - run: ./.github/scripts/install-libkdumpfile.sh
       - run: ./.github/scripts/install-drgn.sh
       - run: ./.github/scripts/download-dump-from-s3.sh dump-201912060006.tar.lzma
