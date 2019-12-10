@@ -51,6 +51,9 @@ jobs:
       - run: ./.github/scripts/install-drgn.sh
       - run: python3 -m pip install pytest pytest-cov
       - run: pytest -v --cov sdb tests
+      - uses: paambaati/codeclimate-action@v2.3.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
   #
   # Verify "yapf" runs successfully.
   #
