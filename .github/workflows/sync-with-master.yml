@@ -1,0 +1,11 @@
+on:
+  schedule:
+    - cron:  '* * * * *'
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./.github/scripts/install-hub.sh
+      - run: ./.github/scripts/sync-with-master.sh
