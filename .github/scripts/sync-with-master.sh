@@ -17,8 +17,8 @@ function die() {
 git show-ref --heads "${GITHUB_REF}" &>/dev/null ||
 	die "GITHUB_REF (${GITHUB_REF}) is not a branch"
 
-git fetch origin master
-git merge FETCH_HEAD
+git fetch --prune --unshallow
+git merge master
 
 echo hi
 echo ho
