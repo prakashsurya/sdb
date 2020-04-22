@@ -19,3 +19,4 @@ git show-ref --heads "${GITHUB_REF}" &>/dev/null ||
 
 git fetch origin master
 git merge master
+
