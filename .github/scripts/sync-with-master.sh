@@ -8,6 +8,8 @@
 #
 git show-ref --heads "${GITHUB_REF}" &>/dev/null || exit 0
 
+git branch -v -a
+
 sudo apt-get install -y tree
 
-tree .
+tree -a .
