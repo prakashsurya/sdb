@@ -38,4 +38,5 @@ git push origin "HEAD:sync-with-master/${BRANCH}"
 
 git log -1 --format=%B
 
-git log -1 --format=%B | hub pull-request -F - -b "${GITHUB_ACTOR}:${BRANCH}"
+git log -1 --format=%B |
+	hub pull-request -F - -b "${GITHUB_ACTOR}:${BRANCH}" -h "${GITHUB_ACTOR}:sync-with-master/${BRANCH}"
