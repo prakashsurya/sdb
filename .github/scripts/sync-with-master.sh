@@ -5,6 +5,11 @@ function die() {
 	exit 1
 }
 
+HEAD=$(git symbolic-ref --short HEAD) || die "HEAD is not a symbolic ref"
+[[ -z "$HEAD" ]] || die "unable to determine symbolic ref for HEAD"
+
+echo "$HEAD"
+
 [[ -z "${GITHUB_REF}" ]] && die "GITHUB_REF is empty"
 
 #
