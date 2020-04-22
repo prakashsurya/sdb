@@ -21,9 +21,9 @@ git fetch --unshallow
 # To avoid conflicting with existing remote branches, we use branches
 # within the "sync-with-master" namespace.
 #
-git checkout -b "sync-with-master/${BRANCH}" "origin/${BRANCH}"
+git checkout -b "sync/${BRANCH}" "origin/${BRANCH}"
 git merge -Xtheirs origin/master
-git push -f origin "sync-with-master/${BRANCH}"
+git push -f origin "sync/${BRANCH}"
 
 #
 # Opening a pull request may fail if there already exists a pull request
