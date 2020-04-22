@@ -15,28 +15,32 @@ git show-ref --heads "${GITHUB_REF}" &>/dev/null ||
 	die "GITHUB_REF (${GITHUB_REF}) is not a branch"
 
 #
-# In order to perform the merge below, we need to have the following git
-# configuration to be set.
+# We need these config parameters set in order to do the git-merge.
 #
 git config user.name "${GITHUB_ACTOR}"
 git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
 #
-# Additionally, in order to perform the merge below, we need the full
-# history for the repository, so the merge can operate on that history.
+# We obtain the original name for the branch we'll be syncing with
+# master. We gather this information here, since we'll change the name
+# of the local branch later, and we'd like to use the original branch
+# name when opening the pull request.
 #
-git fetch --unshallow
-
-#
-# Now we can actually attempt the merge with the master branch.
-#
-git merge origin/master
-
 BRANCH=$(git symbolic-ref --short HEAD) || die "HEAD is not a symbolic ref"
 [[ -n "${BRANCH}" ]] || die "unable to determine symbolic ref for HEAD"
-git push origin "HEAD:sync-with-master/${BRANCH}"
 
-git log -1 --format=%B
+#
+# We need the full git repository history in order to do the git-merge.
+#
+git fetch --unshallow
+git merge origin/master
 
-git log -1 --format=%B |
-	hub pull-request -F - -b "${GITHUB_ACTOR}:${BRANCH}" -h "${GITHUB_ACTOR}:sync-with-master/${BRANCH}"
+#
+# We modify the local branch name and upstream tracking branch such that
+# the correct operations occur when pushing and opening the pull request.
+#
+git branch -M "sync-with-master/${BRANCH}"
+git branch --set-upstream-to "origin/${BRANCH}"
+
+git push -f origin "sync-with-master/${BRANCH}"
+git log -1 --format=%B | hub pull-request -F -
