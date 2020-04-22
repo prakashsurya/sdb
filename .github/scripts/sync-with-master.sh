@@ -21,3 +21,4 @@ git fetch origin master
 git merge master
 
 echo hi
+echo ho
