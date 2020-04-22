@@ -18,7 +18,7 @@ git show-ref --heads "${GITHUB_REF}" &>/dev/null ||
 	die "GITHUB_REF (${GITHUB_REF}) is not a branch"
 
 git fetch --prune --unshallow
-git merge master
+git merge origin/master
 
 echo hi
 echo ho
