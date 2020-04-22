@@ -10,3 +10,5 @@ jobs:
       - uses: actions/checkout@v2
       - run: ./.github/scripts/install-hub.sh
       - run: ./.github/scripts/sync-with-master.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
