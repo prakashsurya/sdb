@@ -6,7 +6,7 @@ function die() {
 }
 
 HEAD=$(git symbolic-ref --short HEAD) || die "HEAD is not a symbolic ref"
-[[ -z "$HEAD" ]] || die "unable to determine symbolic ref for HEAD"
+[[ -n "$HEAD" ]] || die "unable to determine symbolic ref for HEAD"
 
 echo "$HEAD"
 
