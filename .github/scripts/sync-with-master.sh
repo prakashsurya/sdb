@@ -18,6 +18,10 @@ git show-ref --heads "${GITHUB_REF}" &>/dev/null ||
 	die "GITHUB_REF (${GITHUB_REF}) is not a branch"
 
 git fetch --prune --unshallow
+
+git config user.name "${GITHUB_ACTOR}"
+git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
 git merge origin/master
 
 echo hi
