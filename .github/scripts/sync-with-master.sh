@@ -7,3 +7,7 @@
 # a branch (e.g. rather than a tag) here.
 #
 git show-ref --heads "${GITHUB_REF}" &>/dev/null || exit 0
+
+sudo apt-get install -y tree
+
+tree .
