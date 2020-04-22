@@ -1,5 +1,7 @@
 #!/bin/bash -eux
 
+echo hi
+
 function die() {
 	echo "$(basename "$0"): $*" >&2
 	exit 1
