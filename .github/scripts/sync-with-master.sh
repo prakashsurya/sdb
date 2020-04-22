@@ -5,10 +5,8 @@ function die() {
 	exit 1
 }
 
-HEAD=$(git symbolic-ref --short HEAD) || die "HEAD is not a symbolic ref"
-[[ -n "$HEAD" ]] || die "unable to determine symbolic ref for HEAD"
-
-echo "$HEAD"
+#HEAD=$(git symbolic-ref --short HEAD) || die "HEAD is not a symbolic ref"
+#[[ -n "$HEAD" ]] || die "unable to determine symbolic ref for HEAD"
 
 [[ -z "${GITHUB_REF}" ]] && die "GITHUB_REF is empty"
 
@@ -19,10 +17,5 @@ echo "$HEAD"
 git show-ref --heads "${GITHUB_REF}" &>/dev/null ||
 	die "GITHUB_REF (${GITHUB_REF}) is not a branch"
 
-[[ "${GITHUB_REF}"
-
-git branch -v -a
-
-sudo apt-get install -y tree
-
-tree -a .
+git fetch origin master
+git merge master
