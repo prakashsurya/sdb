@@ -43,4 +43,4 @@ git branch -M "sync-with-master/${BRANCH}"
 git branch --set-upstream-to "origin/${BRANCH}"
 
 git push -f origin "sync-with-master/${BRANCH}"
-git log -1 --format=%B | hub pull-request -F -
+git log -1 --format=%B | hub pull-request -F - -b "${BRANCH}"
