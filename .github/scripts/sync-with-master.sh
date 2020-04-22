@@ -35,3 +35,7 @@ git merge origin/master
 BRANCH=$(git symbolic-ref --short HEAD) || die "HEAD is not a symbolic ref"
 [[ -n "${BRANCH}" ]] || die "unable to determine symbolic ref for HEAD"
 git push origin "HEAD:sync-with-master/${BRANCH}"
+
+git log -1 --format=%B
+
+git log -1 --format=%B | hub pull-request -F - -b "origin:${BRANCH}"
