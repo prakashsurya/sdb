@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - uses: prakashsurya/actions/sync-with-master@2fffc48
+      - uses: prakashsurya/actions/sync-with-master@53f8938
         with:
           branch-to-sync: ${{ matrix.branch }}
         env:
